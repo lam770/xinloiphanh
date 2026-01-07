@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xin lỗi Phanh 💖</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .lock-screen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #ffb6c1, #ffc0cb);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .lock-screen h1 { color: white; }
+
+    .lock-screen input {
+      padding: 12px 16px;
+      border-radius: 25px;
+      border: none;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .lock-screen button {
+      margin-top: 12px;
+      padding: 10px 24px;
+      border: none;
+      border-radius: 25px;
+      background: #ff4d6d;
+      color: white;
+      font-size: 16px;
+    }
+
+    .error { color: white; margin-top: 8px; }
+
+    .content {
+      display: none;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .main-text {
+      position: relative;
+      z-index: 2;
+      font-size: clamp(32px, 8vw, 64px);
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255,0,85,0.9);
+      animation: pulse 2s infinite;
+    }
+
+    .floating-text {
+      position: absolute;
+      left: 0;
+      top: 0;
+      white-space: nowrap;
+      color: #fff;
+      font-weight: 700;
+      text-shadow:
+        0 0 12px rgba(255,0,85,1),
+        0 0 24px rgba(255,0,85,0.9),
+        0 0 36px rgba(255,0,85,0.7);
+      animation: floatText linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @keyframes floatText {
+      0%   { transform: translateX(-150vw) scale(0.7); opacity: 0; }
+      10%  { opacity: 1; }
+      50%  { transform: translateX(50vw) scale(1.1); opacity: 1; }
+      100% { transform: translateX(150vw) scale(0.7); opacity: 0; }
+    }
+
+    .heart {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #ff4d6d;
+      transform: rotate(45deg);
+      animation: floatUp linear infinite;
+      opacity: 0.9;
+      z-index: 1;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #ff4d6d;
+      border-radius: 50%;
+    }
+
+    .heart::before { top: -8px; left: 0; }
+    .heart::after { left: -8px; top: 0; }
+
+    @keyframes floatUp {
+      0% { transform: translateY(110vh) scale(0.5) rotate(45deg); opacity: 0; }
+      20% { opacity: 0.9; }
+      100% { transform: translateY(-20vh) scale(1.2) rotate(45deg); opacity: 0; }
+    }
+
+    .heart.twinkle {
+      animation: twinkle 1.5s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lock-screen" id="lock">
+    <h1>💗 Trang bí mật 💗</h1>
+    <input type="password" id="password" placeholder="Nhập mật khẩu" />
+    <button id="unlockBtn">Mở khóa</button>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="content" id="content">
+    <div class="main-text">💗 Xin lỗi Phanh 💗</div>
+  </div>
+
+  <audio id="bgMusic" loop preload="auto">
+    <source src="pin-du-phong.mp3" type="audio/mpeg" />
+  </audio>
+
+  <button id="playMusicBtn" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 20px;border:none;border-radius:25px;background:#ff4d6d;color:white;font-size:16px;z-index:20;">▶ Bật nhạc</button>
+
+  <script>
+    document.getElementById('unlockBtn').addEventListener('click', checkPass);
+
+    function checkPass() {
+      const pass = document.getElementById('password').value;
+      if (pass === 'xinloiphanh') {
+        document.getElementById('lock').style.display = 'none';
+        document.getElementById('content').style.display = 'flex';
+        createHearts();
+        createFloatingTexts();
+        playMusic();
+      } else {
+        document.getElementById('error').innerText = 'Sai mật khẩu rồi 💔';
+      }
+    }
+
+    function playMusic() {
+      const music = document.getElementById('bgMusic');
+      music.volume = 0.6;
+      music.play().catch(() => {
+        const btn = document.getElementById('playMusicBtn');
+        btn.style.display = 'block';
+        btn.onclick = () => { music.play(); btn.style.display = 'none'; };
+      });
+    }
+
+    function createHearts() {
+      const heartCount = 150;
+      for (let i = 0; i < heartCount; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart' + (Math.random() > 0.7 ? ' twinkle' : '');
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = 3 + Math.random() * 6 + 's';
+        heart.style.animationDelay = Math.random() * 5 + 's';
+        heart.style.transform = `scale(${Math.random() + 0.4}) rotate(45deg)`;
+        document.body.appendChild(heart);
+      }
+    }
+
+    function createFloatingTexts() {
+      for (let i = 0; i < 15; i++) {
+        const text = document.createElement('div');
+        text.className = 'floating-text';
+        text.innerText = 'Xin lỗi Phanh';
+        text.style.top = Math.random() * 90 + 'vh';
+        text.style.fontSize = (18 + Math.random() * 42) + 'px';
+        text.style.animationDuration = (5 + Math.random() * 6) + 's';
+        document.body.appendChild(text);
+      }
+    }
+  </script>
+
+</body>
+</html>
